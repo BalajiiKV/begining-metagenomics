@@ -54,9 +54,35 @@ Three types of actions can be defined by plugins: methods, visualizers, and pipe
 
 ---
 
-### Conceptual Overview
+### Workflow
 
 ![workflow](concept-overview.webp)
+
+Steps of the workflow 
+
+- Importing the raw sequence - creation of first .qza file from fastq file
+- Demultiplexing
+- Denoising and Clustering
+- Taxonomic Classification
+
+---
+
+### Demultiplexing
+
+Multiplexing - sequencing different samples together, with barcode attached one or both ends of each sequence.
+
+Demultiplexing - detecting the barcode sequences and mapping them back to the sample they belong.
+
+These barcode info will be available in sample metadata file, which can be given input during demultiplexing.
+
+### Denoising and Clustering
+
+Denoising removes low quality reads. Denosing methods available - DADA2 and Deblur. Produces Amplicon sequence variant(ASV).
+
+Clustering helps in removing chimers or the similar sequence and replicate into one replicate aka OTU(Operational Taxonomic Unit) picking.
+
+FeatureTable (feature table) artifact and a FeatureData[Sequence] (representative sequences) artifact are final output of the denoising and clustering.
+
 ---
 ## References
 
