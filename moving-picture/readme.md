@@ -37,7 +37,7 @@ qiime metadata tabulate \
   --o-visualization sample-metadata-viz.qzv
 ```
 
-![metadata](image/metadata)
+![metadata](images/metadata.png)
 
 From the above viusalisation in qiime2view we can see there are 34 different samples, whose collection site and other details are given. Details to be noted are -
 
@@ -87,5 +87,5 @@ qiime metadata tabulate \
   --o-visualization demul/demux-details-viz.qzv
 ```
 The demultiplexing has resulted in seperation of 263931 reads to its sample id(total samples=34) which can be viewed in qiim2view along with other statistics and visualisation.
-![metadata](image/demultiplex)
+![metadata](images/demultiplex.png)
 
