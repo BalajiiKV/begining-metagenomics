@@ -87,5 +87,61 @@ qiime metadata tabulate \
   --o-visualization demul/demux-details-viz.qzv
 ```
 The demultiplexing has resulted in seperation of 263931 reads to its sample id(total samples=34) which can be viewed in qiim2view along with other statistics and visualisation.
+
 ![metadata](images/demultiplex.png)
 
+## Quality Control
+
+There are two types of plugins used - DADA2 and Deblur, inorder to read about best plugin to use go through Denoising the Denoisers: an independent evaluation of microbiome sequence error-correction approaches(https://peerj.com/articles/5364/).
+
+![qualityscore](images/qualityscore.png)
+
+Two important inputs for denoising are for either trimming the primer or low quality reads from the right or left and maintaing the length of read by truncating.
+
+The interactive visualisation from demux results helps us to determine in maintaining the length of reads to particular base number. In this case its 120 due to more sharp dipping of quality score. And the reads from far left seems to be at highest quality so we keep at 0.
+
+```
+#denoising using DADA2
+qiime dada2 denoise-single \
+  --i-demultiplexed-seqs demul/demux.qza \
+  --p-trim-left 0 \
+  --p-trunc-len 120 \
+  --o-representative-sequences dada2/rep-seqs.qza \
+  --o-table dada2/table.qza \
+  --o-denoising-stats dada2/stats.qz
+  --verbose
+
+#visualisation of stats
+qiime metadata tabulate \
+  --m-input-file stats.qza \
+  --o-visualization stats.qzv
+
+#visualisation of feature table
+qiime feature-table summarize \
+  --i-table dada2/table.qza \
+  --m-sample-metadata-file sample-metadata.tsv \
+  --o-visualization dada2/table.qzv
+
+#visualisation of feature data
+qiime feature-table tabulate-seqs \
+  --i-data dada2/rep-seqs.qza \
+  --o-visualization dada2/rep-seqs.qzv
+```
+## DADA2 summary
+
+Significant factors in stats of DADA2 -
+
+- input - number of sequences (refer demux.qzv)
+- filtered - low quality removal
+- denoised - error corrected 
+- non-chimeric - real biological sequence without any duplicates created during sequencing
+
+![stats](images/stats-dada2.png)
+
+From feature table visualisation we can see there are 770 unique feature which occuring across 34 samples with frequency of 153,807(overall frequency).
+
+![tableft](images/tablestat-dada2.png)
+
+And can see total frequency of features occuring in a sample as well as feature occuring in different samples.
+
+![samft](images/samplefreq-dada2.png)
