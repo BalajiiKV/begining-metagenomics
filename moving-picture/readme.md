@@ -145,3 +145,16 @@ From feature table visualisation we can see there are 770 unique feature which o
 And can see total frequency of features occuring in a sample as well as feature occuring in different samples.
 
 ![samft](images/samplefreq-dada2.png)
+
+## Phylogenetic Diversity Analysis
+
+For building a phylogenetic tree (rooted and unrooted tree) and proceeding with diversity analysis, we first aligin sequence using MAFT (Multiple Alignment using Fast Fourier Transform), then denoise and build a unrooted tree by FastTree and rooted tree with Midpoint rooting.
+
+```
+qiime phylogeny align-to-tree-mafft-fasttree \
+  --i-sequences dada2/rep-seqs.qza \
+  --o-alignment phylo/aligned-rep-seqs.qza \
+  --o-masked-alignment phylo/masked-aligned-rep-seqs.qza \
+  --o-tree phylo/unrooted-tree.qza \
+  --o-rooted-tree phylo/rooted-tree.qza
+```
