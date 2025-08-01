@@ -148,13 +148,70 @@ And can see total frequency of features occuring in a sample as well as feature 
 
 ## Phylogenetic Diversity Analysis
 
-For building a phylogenetic tree (rooted and unrooted tree) and proceeding with diversity analysis, we first aligin sequence using MAFT (Multiple Alignment using Fast Fourier Transform), then denoise and build a unrooted tree by FastTree and rooted tree with Midpoint rooting.
+For building a phylogenetic tree (rooted and unrooted tree) and proceeding with diversity analysis, we first aligin sequence using MAFT (Multiple Alignment using Fast Fourier Transform), then denoise and build a unrooted tree(only has direction of evolution by showing the similarity or difference) by FastTree and rooted tree(shows time/evolutionary distance from ancestor or root) with Midpoint rooting.
 
 ```
 qiime phylogeny align-to-tree-mafft-fasttree \
-  --i-sequences dada2/rep-seqs.qza \
+  --i-sequences qc-ft/dada2/rep-seqs.qza \
   --o-alignment phylo/aligned-rep-seqs.qza \
   --o-masked-alignment phylo/masked-aligned-rep-seqs.qza \
   --o-tree phylo/unrooted-tree.qza \
   --o-rooted-tree phylo/rooted-tree.qza
 ```
+
+## Alpha Diversity and Beta Diversity analysis
+
+Alpha Diversity - It tells how complex or rich a sample in terms of species (richness,evenness, phylogenetic diversity).
+
+Metrics of Alpha Diveristy - OTUs(count unique species), Shannon Index(richness+evenness - sensitive to rare species), Simpson Index(richness+evenness - less sensitivity to rare species) and Faith's PD(Diversity+Phylogeny)
+
+Visuatlizations of Alpha Diversity - Boxplot, rarefaction curves
+
+Sampling depth selection - Selecting the depth such that it retains more sample and ignores less abundant sequence (refer table.qzv)
+
+![sample-depth](images/sample-depth.png)
+
+```
+#for diversity-metrics
+qiime diversity core-metrics-phylogenetic \
+  --i-phylogeny phylo/rooted-tree.qza \
+  --i-table qc-ft/dada2/table.qza \
+  --p-sampling-depth 1103 \
+  --m-metadata-file sample_meta/sample-metadata.tsv \
+  --output-dir diversity-metrics
+```
+Richness and Evenness of the sample is given from the box plot, from alpha diversity visualisation.
+
+- Richness - No. of species
+- Eveness - Equal/Unequal count of species
+
+```
+#for alpha diversity
+qiime diversity alpha-group-significance \
+  --i-alpha-diversity diversity-metrics/faith_pd_vector.qza \
+  --m-metadata-file sample_meta/sample-metadata.tsv \
+  --o-visualization alpha-div/faith-pd-group-significance.qzv
+qiime diversity alpha-group-significance \
+  --i-alpha-diversity diversity-metrics/evenness_vector.qza \
+  --m-metadata-file sample_meta/sample-metadata.tsv \
+  --o-visualization alpha-div/evenness-group-significance.qzv
+```
+
+Kruskal Wallis Test - Non parametric test that compares medians of various sample. For Faith's PD and Evenness test, Kruskal Wallis is considered -
+
+- Faith's PD - to compare the richness between sites.
+- Eveness - to compare the abundance of species in various sites.
+
+![faith-pd](images/faith-pd.png)
+
+Key values for consideration of analysis -
+
+- H value - Higher the value then higher the richness/evenness
+- p-value - It should be below 0.05 to reject the null hypothesis(probablity value)
+- q-value - It is corrected p-value on accounting False Discovery rate so it should be less than 0.05.
+
+Beta Diversity -  It tells how much the samples are similar or different.
+
+Metrics - Bray Curtis(abundance of species), Jaccard Index(presence or absence), Unweighted UniFrac(phylogeny+presence), Weighted UniFrac(phylogeny+abundance)
+
+Visualizations of Beta Diversity - PCoA plot, heatmap, dendrograms
